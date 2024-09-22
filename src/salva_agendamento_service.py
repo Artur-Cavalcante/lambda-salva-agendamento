@@ -30,8 +30,6 @@ class SalvaAgendamentoService():
             agendamento["status_agendamento"] = "Confirmado"
             self.__envio_notificacao_email(agendamento, "email_paciente")
             self.__envio_notificacao_email(agendamento, "email_medico")
-        
-        #TODO dps ajustar a rota de buscar status do agendamentom, mas o que importa é o e-mail
 
     def __envio_notificacao_email(self, agendamento, email_para_envio):
         msg_email = agendamento
