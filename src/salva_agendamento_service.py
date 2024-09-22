@@ -36,9 +36,9 @@ class SalvaAgendamentoService():
     def __envio_notificacao_email(self, agendamento, email_para_envio):
         msg_email = agendamento
         msg_email["email_para_envio"] = email_para_envio
-        self.logger.info("Iniciado envio para fila notificação")
+        self.logger.info(f"Iniciado envio para fila notificação {msg_email}")
         self.sqs_client.send_message(QueueUrl=self.url_fila_notificacao, MessageBody=json.dumps(msg_email))
-        self.logger.info("Finalizando envio para fila notificação")
+        self.logger.info(f"Finalizando envio para fila notificação {msg_email}")
 
     def __existe_trava_medico_e_horario(self, bucket_name, arquivo_s3):
         try:
