@@ -65,13 +65,15 @@ class SalvaAgendamentoService():
 
             self.logger.info(f'Response get {response}')
 
-            conteudo = response['Body'].read().decode('utf-8')
+            conteudo = response['Body'].read()
             self.logger.info(f'Response result {conteudo}')
 
-            conteudo["status_agendamento"] = novoStatus
-            self.logger.info(f'Response result agendamento {conteudo}')
+            conteudoJson = pickle.loads(conteudo)
 
-            pickled_obj = pickle.dumps(conteudo)
+            conteudoJson["status_agendamento"] = novoStatus
+            self.logger.info(f'Response result agendamento {conteudoJson}')
+
+            pickled_obj = pickle.dumps(conteudoJson)
             self.logger.info(f'Response pickled {pickled_obj}')
 
             self.s3_client.put_object(
