@@ -22,7 +22,7 @@ class SalvaAgendamentoService():
 
         self.logger.info(f'Path arquivo trava {path_arquivo_trava_horario}')
         existeTravaMedicoEHorario = self.__existe_trava_medico_e_horario(self.bucket_name, path_arquivo_trava_horario)
-        self.logger.info(f'ARQUIVO {arquivo}')
+        self.logger.info(f'ExisteTravaMedicoEHorario {path_arquivo_trava_horario} {existeTravaMedicoEHorario}')
 
         if(existeTravaMedicoEHorario): #TODO trocar aqui para verificar se arquivo existe
             self.__alterar_status_agendamento(agendamento['id'], str(AgendamentoStatus.Rejeitado))
