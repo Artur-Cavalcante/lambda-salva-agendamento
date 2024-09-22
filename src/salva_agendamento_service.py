@@ -4,9 +4,6 @@ import boto3
 import pickle
 from aws_lambda_powertools import Logger
 
-from src.agendamento_status_enum import AgendamentoStatus
-
-
 class SalvaAgendamentoService():
     def __init__(self, logger: Logger) -> None:
         self.logger = logger
@@ -25,12 +22,12 @@ class SalvaAgendamentoService():
         self.logger.info(f'ExisteTravaMedicoEHorario {path_arquivo_trava_horario} {existeTravaMedicoEHorario}')
 
         if(existeTravaMedicoEHorario): #TODO trocar aqui para verificar se arquivo existe
-            self.__alterar_status_agendamento(agendamento['id'], str(AgendamentoStatus.Rejeitado))
-            agendamento["status_agendamento"] = str(AgendamentoStatus.Rejeitado)
+            self.__alterar_status_agendamento(agendamento['id'], "Rejeitado")
+            agendamento["status_agendamento"] = "Rejeitado"
             self.__envio_notificacao_email(agendamento, "email_paciente")
         else:
-            self.__alterar_status_agendamento(agendamento['id'], str(AgendamentoStatus.Confirmado))
-            agendamento["status_agendamento"] = str(AgendamentoStatus.Confirmado)
+            self.__alterar_status_agendamento(agendamento['id'], "Confirmado")
+            agendamento["status_agendamento"] = "Confirmado"
             self.__envio_notificacao_email(agendamento, "email_paciente")
             self.__envio_notificacao_email(agendamento, "email_medico")
         
@@ -39,7 +36,9 @@ class SalvaAgendamentoService():
     def __envio_notificacao_email(self, agendamento, email_para_envio):
         msg_email = agendamento
         msg_email["email_para_envio"] = email_para_envio
+        self.logger.info("Iniciado envio para fila notificação")
         self.sqs_client.send_message(QueueUrl=self.url_fila_notificacao, MessageBody=json.dumps(msg_email))
+        self.logger.info("Finalizando envio para fila notificação")
 
     def __existe_trava_medico_e_horario(self, bucket_name, arquivo_s3):
         try:
