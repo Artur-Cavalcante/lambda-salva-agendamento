@@ -43,7 +43,7 @@ class SalvaAgendamentoService():
     def __existe_trava_medico_e_horario(self, bucket_name, arquivo_s3):
         try:
             response = self.s3_client.get_object(Bucket=bucket_name, Key=f'{arquivo_s3}.pkl')
-            conteudo = response['Body'].read().decode('utf-8')
+            conteudo = response['Body'].read()
             self.logger.info(f"Foi encontrado trava para o medico e horario {arquivo_s3}")
 
             return True
