@@ -21,18 +21,18 @@ class SalvaAgendamentoService():
         path_arquivo_trava_horario: str = f'{crm_medico}-{horario}'
 
         self.logger.info(f'Path arquivo trava {path_arquivo_trava_horario}')
-        arquivo = self.__ler_arquivo_s3(self.bucket_name, path_arquivo_trava_horario)
+        existeTravaMedicoEHorario = self.__existe_trava_medico_e_horario(self.bucket_name, path_arquivo_trava_horario)
         self.logger.info(f'ARQUIVO {arquivo}')
 
-        if(True): #TODO trocar aqui para verificar se arquivo existe
+        if(existeTravaMedicoEHorario): #TODO trocar aqui para verificar se arquivo existe
             self.__alterar_status_agendamento(agendamento['id'], str(AgendamentoStatus.Rejeitado))
             agendamento["status_agendamento"] = str(AgendamentoStatus.Rejeitado)
             self.__envio_notificacao_email(agendamento, "email_paciente")
         else:
             self.__alterar_status_agendamento(agendamento['id'], str(AgendamentoStatus.Confirmado))
             agendamento["status_agendamento"] = str(AgendamentoStatus.Confirmado)
-            __envio_notificacao_email(agendamento, "email_paciente")
-            __envio_notificacao_email(agendamento, "email_medico")
+            self.__envio_notificacao_email(agendamento, "email_paciente")
+            self.__envio_notificacao_email(agendamento, "email_medico")
         
         #TODO dps ajustar a rota de buscar status do agendamentom, mas o que importa é o e-mail
 
@@ -41,16 +41,20 @@ class SalvaAgendamentoService():
         msg_email["email_para_envio"] = email_para_envio
         self.sqs_client.send_message(QueueUrl=self.url_fila_notificacao, MessageBody=json.dumps(msg_email))
 
-    def __ler_arquivo_s3(self, bucket_name, arquivo_s3):
+    def __existe_trava_medico_e_horario(self, bucket_name, arquivo_s3):
         try:
             response = self.s3_client.get_object(Bucket=bucket_name, Key=arquivo_s3)
             conteudo = response['Body'].read().decode('utf-8')
+            self.logger.info(f"Foi encontrado trava para o medico e horario {arquivo_s3}")
 
-            return json.loads(conteudo)
-
+            return True
         except Exception as e:
-            print(f'Erro ao ler o arquivo {arquivo_s3} do S3: {str(e)}')
-            return None
+            print(f'Erro ao ler o arquivo {arquivo_s3} do S3: {e}')
+            if(e.response["ResponseMetadata"]["HTTPStatusCode"] == 404):
+                self.logger.info(f"Não foi encontrado trava para o medico e horario {arquivo_s3}")
+                return False
+            
+            raise
     
     def __alterar_status_agendamento(self, id: str, novoStatus: str):
         try:
