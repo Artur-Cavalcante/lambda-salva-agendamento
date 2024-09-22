@@ -65,7 +65,7 @@ class SalvaAgendamentoService():
 
             self.logger.info(f'Response get {response}')
 
-            conteudo = response['Body'].read().decode('utf-8')
+            conteudo = response['Body'].read().decode('latin-1')
             result = json.loads(conteudo)
             self.logger.info(f'Response result {result}')
 
