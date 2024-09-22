@@ -31,11 +31,12 @@ class SalvaAgendamentoService():
             self.__alterar_status_agendamento(agendamento['id'], "Confirmado")
             agendamento["status_agendamento"] = "Confirmado"
             self.__envio_notificacao_email(agendamento, email_para_envio = agendamento["email_paciente"])
-            self.__envio_notificacao_email(agendamento, email_para_envio = agendamento["email_medico"])
+            self.__envio_notificacao_email(agendamento, email_para_envio = agendamento["email_medico"], para_email_medico = True)
 
-    def __envio_notificacao_email(self, agendamento, email_para_envio):
+    def __envio_notificacao_email(self, agendamento, email_para_envio, para_email_medico):
         msg_email = agendamento
         msg_email["email_para_envio"] = email_para_envio
+        msg_email["para_email_medico"] = para_email_medico
         self.logger.info(f"Iniciado envio para fila notificação {msg_email}")
         self.sqs_client.send_message(QueueUrl=self.url_fila_notificacao, MessageBody=json.dumps(msg_email))
         self.logger.info(f"Finalizando envio para fila notificação {msg_email}")
