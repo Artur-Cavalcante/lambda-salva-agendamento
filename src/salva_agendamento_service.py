@@ -42,13 +42,13 @@ class SalvaAgendamentoService():
 
     def __existe_trava_medico_e_horario(self, bucket_name, arquivo_s3):
         try:
-            response = self.s3_client.get_object(Bucket=bucket_name, Key=arquivo_s3)
+            response = self.s3_client.get_object(Bucket=bucket_name, Key=f'{arquivo_s3}.pkl')
             conteudo = response['Body'].read().decode('utf-8')
             self.logger.info(f"Foi encontrado trava para o medico e horario {arquivo_s3}")
 
             return True
         except Exception as e:
-            print(f'Erro ao ler o arquivo {arquivo_s3} do S3: {e}')
+            print(f'Arquivo {arquivo_s3} do S3: {e}')
             if(e.response["ResponseMetadata"]["HTTPStatusCode"] == 404):
                 self.logger.info(f"Não foi encontrado trava para o medico e horario {arquivo_s3}")
                 return False
