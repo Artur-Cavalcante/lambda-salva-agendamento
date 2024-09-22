@@ -25,12 +25,12 @@ class SalvaAgendamentoService():
         self.logger.info(f'ARQUIVO {arquivo}')
 
         if(True): #TODO trocar aqui para verificar se arquivo existe
-            self.__alterar_status_agendamento(agendamento['id'], AgendamentoStatus.Rejeitado)
-            agendamento["status_agendamento"] = AgendamentoStatus.Rejeitado
+            self.__alterar_status_agendamento(agendamento['id'], str(AgendamentoStatus.Rejeitado))
+            agendamento["status_agendamento"] = str(AgendamentoStatus.Rejeitado)
             self.__envio_notificacao_email(agendamento, "email_paciente")
         else:
-            self.__alterar_status_agendamento(agendamento['id'], AgendamentoStatus.Confirmado)
-            agendamento["status_agendamento"] = AgendamentoStatus.Confirmado
+            self.__alterar_status_agendamento(agendamento['id'], str(AgendamentoStatus.Confirmado))
+            agendamento["status_agendamento"] = str(AgendamentoStatus.Confirmado)
             __envio_notificacao_email(agendamento, "email_paciente")
             __envio_notificacao_email(agendamento, "email_medico")
         
@@ -52,7 +52,7 @@ class SalvaAgendamentoService():
             print(f'Erro ao ler o arquivo {arquivo_s3} do S3: {str(e)}')
             return None
     
-    def __alterar_status_agendamento(self, id: str, novoStatus: AgendamentoStatus):
+    def __alterar_status_agendamento(self, id: str, novoStatus: str):
         try:
             response = self.s3_client.get_object(
                 Bucket=self.bucket_name,
