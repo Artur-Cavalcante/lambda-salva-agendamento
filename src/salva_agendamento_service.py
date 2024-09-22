@@ -28,8 +28,8 @@ class SalvaAgendamentoService():
         else:
             self.__alterar_status_agendamento(agendamento['id'], "Confirmado")
             agendamento["status_agendamento"] = "Confirmado"
-            self.__envio_notificacao_email(agendamento, "email_paciente")
-            self.__envio_notificacao_email(agendamento, "email_medico")
+            self.__envio_notificacao_email(agendamento, email_para_envio = agendamento["email_paciente"])
+            self.__envio_notificacao_email(agendamento, email_para_envio = agendamento["email_medico"])
 
     def __envio_notificacao_email(self, agendamento, email_para_envio):
         msg_email = agendamento
