@@ -25,7 +25,7 @@ class SalvaAgendamentoService():
         if(existeTravaMedicoEHorario):
             self.__alterar_status_agendamento(agendamento['id'], "Rejeitado")
             agendamento["status_agendamento"] = "Rejeitado"
-            self.__envio_notificacao_email(agendamento, "email_paciente")
+            self.__envio_notificacao_email(agendamento, email_para_envio = agendamento["email_paciente"])
         else:
             self.__inserir_trava_horario(agendamento, path_arquivo_trava_horario)
             self.__alterar_status_agendamento(agendamento['id'], "Confirmado")
