@@ -1,6 +1,7 @@
 import os
 import json
 import boto3
+import pickle
 from aws_lambda_powertools import Logger
 
 from src.agendamento_status_enum import AgendamentoStatus
@@ -49,4 +50,34 @@ class SalvaAgendamentoService():
 
         except Exception as e:
             print(f'Erro ao ler o arquivo {arquivo_s3} do S3: {str(e)}')
+            return None
+    
+    def __alterar_status_agendamento(self, id: str, novoStatus: AgendamentoStatus):
+        try:
+            response = self.s3_client.getObject(
+                Bucket=self.bucket_name,
+                Key=f"{id}.pkl"
+            )
+
+            self.logger.info(f'Response get {response}')
+
+            conteudo = response['Body'].read().decode('utf-8')
+            result = json.loads(conteudo)
+            self.logger.info(f'Response result {result}')
+
+            result["status_agendamento"] = novoStatus
+            self.logger.info(f'Response result agendamento {result}')
+
+            pickled_obj = pickle.dumps(result)
+            self.logger.info(f'Response pickled {pickled_obj}')
+
+            self.s3_client.put_object(
+                Bucket=self.bucket_name,
+                Key=f"{id}.pkl",
+                Body=pickled_obj
+            )
+
+            self.logger.info(f'Status atualizado')
+        except Exception as e:
+            print(f'Erro ao atualizar status {id} do S3: {str(e)}')
             return None
