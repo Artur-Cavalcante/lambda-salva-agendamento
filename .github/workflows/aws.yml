@@ -1,0 +1,33 @@
+name: Deploy Lambda
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Python Setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - run: pip install --target . -r requirements.txt
+
+      - name: Zip
+        run: |
+          zip -r -9 lambda-notificacao-agendamento.zip *
+
+      - name: Update
+        uses: kazimanzurrashid/aws-lambda-update-action@v2.0.2
+        with:
+          zip-file: lambda-notificacao-agendamento.zip
+        env:
+          AWS_REGION: "us-east-2"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
