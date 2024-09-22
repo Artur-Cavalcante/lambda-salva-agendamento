@@ -54,7 +54,7 @@ class SalvaAgendamentoService():
     
     def __alterar_status_agendamento(self, id: str, novoStatus: AgendamentoStatus):
         try:
-            response = self.s3_client.getObject(
+            response = self.s3_client.get_object(
                 Bucket=self.bucket_name,
                 Key=f"{id}.pkl"
             )
